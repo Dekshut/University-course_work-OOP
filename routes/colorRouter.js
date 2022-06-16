@@ -1,6 +1,5 @@
 const Router = require('express')
 const colorController = require('../controller/colorController')
-const {check} = require("express-validator")
 
 const router = new Router() 
 
