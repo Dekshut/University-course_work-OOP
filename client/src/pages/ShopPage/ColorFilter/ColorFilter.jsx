@@ -22,7 +22,7 @@ const style = {
 const requestFetch = (url) => {
   return fetch(url).then(response => {
     if (response.ok) {
-      return response
+      return response.json()
     }
 
     return response.json().then(error => {
