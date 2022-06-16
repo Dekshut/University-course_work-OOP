@@ -3,11 +3,13 @@ const sequelize = require('./db')
 const router = require ('./routes')
 const passport = require('passport')
 const User = require('./model/user')
+const cors = require('cors')
 
 const PORT = process.env.PORT || 8080
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 app.use('/api', router)
 app.use(passport.initialize())
