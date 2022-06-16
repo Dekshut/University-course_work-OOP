@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const {checkResult} = require("express-validator")
+const {validationResult} = require("express-validator")
 const errorHandler = require('../utils/errorHandler')
 const User = require('../model/user')
 const keys = require('../config/keys')
@@ -34,7 +34,7 @@ class UserController{
     }
 
     async register (req, res) {
-        const errors = checkResult(req)
+        const errors = validationResult(req)
         if(!errors.isEmpty()){
             return res.status(400).json({
                 message: "Invalid data entered"

@@ -1,5 +1,4 @@
 const Router = require('express')
-const passport = require('passport')
 
 const colorRouter = require('./colorRouter')
 const categoryRouter = require('./categoryRouter')
