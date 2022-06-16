@@ -1,0 +1,97 @@
+import logo from '../../images/logo.png';
+import { Link } from 'react-router-dom';
+import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
+import PersonIcon from '@mui/icons-material/Person';
+import SearchIcon from '@mui/icons-material/Search';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import { Popover } from '@mui/material';
+import React from 'react';
+import LoginPopover from '../LoginPopover/LoginPopover';
+import CartPopover from '../CartPopover.jsx/CartPopover';
+
+function Header() {
+
+  const [userPopover, setUserPopover] = React.useState(null);
+  const handleClickUser = (event) => { setUserPopover(event.currentTarget) };
+  const handleCloseUser = () => { setUserPopover(null) };
+
+  const [cartPopover, setCartPopover] = React.useState(null);
+  const handleClickCart = (event) => { setCartPopover(event.currentTarget) };
+  const handleCloseCart = () => { setCartPopover(null) };
+
+  const openUser = Boolean(userPopover);
+  const openCart = Boolean(cartPopover);
+
+  return (
+    <header className="header">
+      <div className="container">
+        <div className="header__inner">
+          <Link className="logo" to="/">
+            MALBO
+          </Link>
+          <nav className="menu">
+            <ul className="menu__list">
+              <li className="menu__list-item">
+                <Link className="menu__list-link" to="/catalog?gender=man">Man</Link>
+              </li>
+              <li className="menu__list-item">
+                <Link className="menu__list-link" to="/catalog?gender=woman">Woman</Link>
+              </li>
+            </ul>
+          </nav>
+          <div className="user-nav">
+            <div
+              onClick={handleClickUser}
+              className="user-nav__link"
+            >
+              <PersonIcon />
+            </div>
+            <Popover
+              id="mouse-over-popover-user"
+              open={openUser}
+              anchorEl={userPopover}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              onClose={handleCloseUser}
+              elevation={2}
+            >
+              <LoginPopover handleClose={handleCloseUser} />
+            </Popover>
+            <Link className="user-nav__link" to="/contact">
+              <EmailOutlinedIcon />
+            </Link>
+            <div className="user-nav__link" onClick={handleClickCart}>
+              <FavoriteOutlinedIcon />
+              <span className="user-nav__num">7</span>
+            </div>
+            <Popover
+              id="mouse-over-popover-cart"
+              open={openCart}
+              anchorEl={cartPopover}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              onClose={handleCloseCart}
+              elevation={2}
+            >
+              <CartPopover handleClose={handleCloseCart} />
+            </Popover>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export default Header;
