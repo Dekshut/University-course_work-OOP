@@ -1,0 +1,65 @@
+const Color = require('../model/color')
+const errorHandler = require('../utils/errorHandler')
+
+class ColorController{
+
+    async createColor(req, res){
+        const candidate = await Color.findOne({hex : req.body.hex})
+        if(candidate){
+            res.status(409).json({
+                message: 'Color already exist'
+            })
+        } else {
+            try{
+                const color = await Color.create({
+                        hex : req.body.hex,
+                        name : req.body.name
+                    })
+                res.status(201).json(color)
+                } catch(error){
+                    errorHandler(res, error)
+                }
+        }
+    }
+
+    async deleteColor(req, res){
+        const candidate = await Color.findOne({where: {id : req.body.id}})
+        if(candidate){
+            try{
+                const color = await Color.destroy({
+                    where: {id : req.body.id}})
+                res.status(201).json({
+                    message: ""
+                })
+                } catch(error){
+                    errorHandler(res, error)
+                }
+        } else {
+            res.status(404).json({
+                message: 'Color not found'
+            })
+        }
+    }
+
+    async findOne(req, res){
+        try {
+                const color = await Color.findOne({
+                where : { id: req.params.id }
+            })
+            res.status(200).json(color)
+          } catch (error) {
+            errorHandler(res, error)
+          }
+    }
+
+    async getAllColors(req, res) {
+        try {
+            const color = await Color.findAll()
+            res.status(200).json(color)
+      } catch (error) {
+        errorHandler(res, error)
+      }
+    }
+}
+
+module.exports = new ColorController
