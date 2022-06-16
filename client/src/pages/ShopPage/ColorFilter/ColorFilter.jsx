@@ -19,6 +19,20 @@ const style = {
   p: 4,
 };
 
+const requestFetch = (url) => {
+  return fetch(url).then(response => {
+    if (response.ok) {
+      return response
+    }
+
+    return response.json().then(error => {
+      const e = new Error('Smth gone wrong')
+      e.data = error
+      throw e
+    })
+  });
+}
+
 function ColorFilter() {
   const [color, setColor] = React.useState('');
   const [colorInput, setColorInput] = React.useState('');
@@ -31,6 +45,17 @@ function ColorFilter() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  React.useEffect(() => {
+    const url = 'http://localhost:8080/api/color';
+
+    requestFetch(url)
+      .then(data => {
+        console.log(data)
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, [])
 
 
   return (
