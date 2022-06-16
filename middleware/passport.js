@@ -15,7 +15,7 @@ module.exports = passport => {
         new JwtStrategy(options, async (payload, done) => {
             try {
                 const user = await User.findByPk(payload.userId)
-                if(user){
+                if(user && user.isAdmin){
                     done(null, user)
                 } else {
                     done(null, false)
