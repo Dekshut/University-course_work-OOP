@@ -34,6 +34,7 @@ const requestFetch = (url) => {
 }
 
 function ColorFilter() {
+  const [allColors, setAllColors] = React.useState([]);
   const [color, setColor] = React.useState('');
   const [colorInput, setColorInput] = React.useState('');
 
@@ -50,7 +51,8 @@ function ColorFilter() {
 
     requestFetch(url)
       .then(data => {
-        console.log(data)
+        // console.log(data)
+        setAllColors(data)
       })
       .catch(err => {
         console.log(err);
@@ -116,46 +118,13 @@ function ColorFilter() {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={10}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `red` }} />Red
-            </div>
-          </MenuItem>
-          <MenuItem value={20}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Yellow` }} />Yellow
-            </div>
-          </MenuItem>
-          <MenuItem value={30}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Brown` }} />Brown
-            </div>
-          </MenuItem>
-          <MenuItem value={40}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Blue` }} />Blue
-            </div>
-          </MenuItem>
-          <MenuItem value={50}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `White` }} />White
-            </div>
-          </MenuItem>
-          <MenuItem value={60}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Pink` }} />Pink
-            </div>
-          </MenuItem>
-          <MenuItem value={70}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Black` }} />Black
-            </div>
-          </MenuItem>
-          <MenuItem value={80}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `green` }} />Green
-            </div>
-          </MenuItem>
+          {allColors?.map(item => (
+            <MenuItem value={item.id}>
+              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
+                <div className='colorRect' style={{ background: item.hex }} />{item.name}
+              </div>
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
     </div>
