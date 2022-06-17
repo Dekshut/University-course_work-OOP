@@ -17,6 +17,6 @@ module.exports = function (req, res) {
     }
     transport.sendMail(opt, function (err) {
         if (err) console.error(err);
-        res.status(200).send('Send Message!');
+        res.status(200).send('Send message');
     });
 };

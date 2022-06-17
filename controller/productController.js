@@ -1,6 +1,8 @@
 const Product = require('../model/product')
 const Favorite = require('../model/favorite')
 const errorHandler = require('../utils/errorHandler')
+const Color = require('../model/color')
+const User = require('../model/user')
 
 class ProductController {
 
@@ -22,7 +24,8 @@ class ProductController {
             const products = await Product.findAll({
                 where: {
                     gender: req.params.gender
-                }
+                },
+                include: [{ model: Color }]
             })
             res.status(200).json(products)
         } catch (error) {
@@ -33,26 +36,18 @@ class ProductController {
     //список избранного для конкретного пользователя
     async getFavProductByUser(req, res) {
         try {
-            const favs = await Favorite.findAll({
-                where: {
-                    userId: req.params.userId,
-                },
-                attributes: {
-                    exclude: ['id', 'userId']
-                }
+            const favs = await User.findAll({
+                where: { id: req.params.userId },
+                attributes: ['id'],
+                include: [{
+                    //связанные модели
+                    model: Product,
+                    through: {
+                        attributes: ['id'] //favorite.id
+                    }
+                }]
             })
-            const favProducts = await Promise.all(
-                // для каждого элемента массива
-                favs.map(
-                    async ({ productId }) =>
-                        await Product.findOne({
-                            where: {
-                                id: productId
-                            }
-                        }))
-            )
-            res.status(200).json(favProducts)
-
+            res.status(200).json(favs)
         } catch (error) {
             errorHandler(res, error)
         }
