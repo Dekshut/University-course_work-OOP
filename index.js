@@ -2,6 +2,7 @@ const express = require('express')
 const sequelize = require('./db')
 const router = require ('./routes')
 const passport = require('passport')
+//не вызывается, но нужно для синхронизации моделей
 const User = require('./model/user')
 const cors = require('cors')
 
@@ -17,7 +18,7 @@ require('./middleware/passport')(passport)
 
 async function startBd() {
   try {
-      await sequelize.authenticate()
+      await sequelize.authenticate() //проверка работы базы
       app.listen(PORT, ()=> {console.log(`Server started on port ${PORT}`)})
   } catch (error) {
       console.error('Unable to connect to the database:', error);
@@ -26,7 +27,8 @@ async function startBd() {
 
 startBd()
 
-// Синхронизация с моделями (с удаление сущ таблиц)
+// Синхронизация с моделями 
+// удаляет все таблицы в базе и создает заново
 // sequelize.sync({force: true}).then(result=>{
 //   console.log("result done");
 // })

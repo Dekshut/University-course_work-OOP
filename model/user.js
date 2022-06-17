@@ -21,6 +21,7 @@ const User = sequelize.define('user', {
         defaultValue: 'false' }
 })
 
+// формализация многие ко многим через таблицу Избранного
 User.belongsToMany(Product, {through: Favorite});
 Product.belongsToMany(User, {through: Favorite});
 

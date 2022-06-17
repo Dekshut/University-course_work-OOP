@@ -4,6 +4,7 @@ const {check} = require("express-validator")
 const router = new Router() 
 
 router.post('/login', userController.login)
+//присутствует middleware для проверки корректности данных
 router.post('/register',[
     check('email').isEmail(),
     check('password').isLength({min: 4, max: 20})

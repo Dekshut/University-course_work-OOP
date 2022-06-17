@@ -7,7 +7,7 @@ class ColorController {
     const candidate = await Color.findOne({ hex: req.body.hex })
     if (candidate) {
       res.status(409).json({
-        message: 'Color already exist'
+        message: 'This color already exists'
       })
     } else {
       try {
@@ -26,11 +26,11 @@ class ColorController {
     const candidate = await Color.findOne({ where: { id: req.body.id } })
     if (candidate) {
       try {
-        const color = await Color.destroy({
+        await Color.destroy({
           where: { id: req.body.id }
         })
         res.status(201).json({
-          message: ""
+          message: 'Color removed successfully'
         })
       } catch (error) {
         errorHandler(res, error)
@@ -47,7 +47,13 @@ class ColorController {
       const color = await Color.findOne({
         where: { id: req.params.id }
       })
-      res.status(200).json(color)
+      if (color) {
+        res.status(200).json(color)
+      } else {
+        res.status(404).json({
+          message: 'Color not found'
+        })
+      }
     } catch (error) {
       errorHandler(res, error)
     }

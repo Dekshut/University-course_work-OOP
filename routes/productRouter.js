@@ -10,6 +10,7 @@ router.get('/:id', productController.getOneProduct)
 router.get('/fav/:userId', productController.getFavProductByUser)
 router.get('/count/:productId', productController.countFavoriteByProduct)
 
+//присутствует middleware для проверки авторизации и роли
 router.patch('/:id', passport.authenticate('jwt', {session: false}), productController.updateProducts)
 router.post('/', passport.authenticate('jwt', {session: false}), productController.createProduct)
 router.delete('/:id', passport.authenticate('jwt', {session: false}), productController.deleteProduct)
