@@ -144,17 +144,6 @@ class ProductController {
         }
     }
 
-    // async deleteProduct(req, res) {
-    //     try {
-    //         await Product.destroy({where: {id: req.params.id}})
-    //         res.status(200).json({
-    //             message: 'Product successfully uninstalled'
-    //         })
-    //     } catch (error) {
-    //         errorHandler(res, error)
-    //     }
-    // }
-
     async deleteProduct(req, res) {
         try {
             const product = await Product.findOne({
