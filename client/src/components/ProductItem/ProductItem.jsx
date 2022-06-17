@@ -1,11 +1,8 @@
 import { Link } from 'react-router-dom';
-import partner1 from '../../images/product/0.jpg';
-import StarRating from '../StarRating/StarRating';
 import ReadMoreOutlinedIcon from '@mui/icons-material/ReadMoreOutlined';
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 
 function ProductItem({ toList, img, title, descr, price, colorId, id, size, colorObj, category }) {
-  console.log(colorObj)
 
   return (
     <div className={`product-item ${toList && 'product-item--list'}`}>
