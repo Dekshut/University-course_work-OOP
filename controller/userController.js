@@ -21,7 +21,8 @@ class UserController {
           role: candidate.isAdmin
         }, keys.jwt, { expiresIn: 60 * 60 })
         res.status(200).json({
-          token: `Bearer ${token}`
+          token: `Bearer ${token}`,
+          isAdmin: candidate.isAdmin
         })
       } else {
         res.status(401).json({
@@ -34,6 +35,7 @@ class UserController {
       })
     }
   }
+
 
   async register(req, res) {
     const errors = validationResult(req)

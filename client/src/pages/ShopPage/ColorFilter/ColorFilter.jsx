@@ -7,6 +7,8 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import './ColorFilter.scss'
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { changeAllColors } from '../../../redux/slices/appSlice';
 
 const style = {
   position: 'absolute',
@@ -34,7 +36,10 @@ const requestFetch = (url) => {
 }
 
 function ColorFilter() {
-  const [allColors, setAllColors] = React.useState([]);
+  const dispatch = useDispatch();
+
+  const { isAdmin, allColors } = useSelector(state => state.app);
+  // const [allColors, setAllColors] = React.useState([]);
   const [color, setColor] = React.useState('');
   const [colorInput, setColorInput] = React.useState('');
 
@@ -52,7 +57,7 @@ function ColorFilter() {
     requestFetch(url)
       .then(data => {
         // console.log(data)
-        setAllColors(data)
+        dispatch(changeAllColors(data))
       })
       .catch(err => {
         console.log(err);
@@ -64,7 +69,7 @@ function ColorFilter() {
     <div className="filter__item filter-color">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <h3 className="filter__title">Color Filter</h3>
-        <AddIcon onClick={handleOpen} style={{ color: '#fff', background: '#34c3ff', borderRadius: 5, cursor: 'pointer' }} />
+        {isAdmin && <AddIcon onClick={handleOpen} style={{ color: '#fff', background: '#34c3ff', borderRadius: 5, cursor: 'pointer' }} />}
       </div>
 
       <Modal

@@ -1,5 +1,5 @@
 import { Box, Button, Modal, TextField, Typography, InputLabel, MenuItem, FormControl, Select } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import InputAmount from "../../components/InputAmount/InputAmount";
 import ProductTabs from "../../components/ProductTabs/ProductTabs";
@@ -8,6 +8,9 @@ import img1 from '../../images/product/1.jpg';
 import img2 from '../../images/product/2.jpg';
 import img3 from '../../images/product/3.jpg';
 import img4 from '../../images/product/4.jpg';
+import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
+import { changeLoading } from "../../redux/slices/appSlice";
 
 const style = {
   position: 'absolute',
@@ -20,7 +23,23 @@ const style = {
   p: 4,
 };
 
-function ProductPage() {
+const requestFetch = (url) => {
+  return fetch(url).then(response => {
+    if (response.ok) {
+      return response.json()
+    }
+
+    return response.json().then(error => {
+      const e = new Error('Smth gone wrong')
+      e.data = error
+      throw e
+    })
+  });
+}
+
+function ProductPage({ colorObj }) {
+  const dispatch = useDispatch()
+  const { isAdmin } = useSelector(state => state.app);
   const [productImg, setProductImg] = useState(img1);
 
   const [open, setOpen] = useState(false);
@@ -46,6 +65,30 @@ function ProductPage() {
     setCategory(event.target.value);
   };
 
+  const [productData, setProductData] = useState({})
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const id = searchParams.get('id');
+  const colorHex = searchParams.get('hex');
+  const colorName = searchParams.get('color');
+  const categoryItem = searchParams.get('category');
+
+  useEffect(() => {
+    dispatch(changeLoading(true))
+    const url = `http://localhost:8080/api/product/${id}`;
+
+    requestFetch(url)
+      .then(data => {
+        dispatch(changeLoading(false))
+        console.log(data)
+        setProductData(data)
+      })
+      .catch(err => {
+        dispatch(changeLoading(false))
+        console.log(err);
+      });
+  }, [id])
+
   return (
     <main class="main">
       <Breadcrumbs title={'Product'} />
@@ -57,101 +100,54 @@ function ProductPage() {
               <div class="product-one__slide product-slide">
                 <div class="product-slide__big">
                   <div class="product-slide__big-item">
-                    <img src={productImg} alt="" />
+                    <img src={productData?.img} alt="" />
                   </div>
                 </div>
               </div>
               <div class="product-one__content">
                 <h2 class="product-one__title">
-                  Emboossed Packet Backpack
+                  {productData?.title}
                 </h2>
                 <div class="product-one__box">
                   <div class="product-one__price">
-                    <div class="product-one__price-new">$19.00</div>
+                    <div class="product-one__price-new">${productData?.price}</div>
                   </div>
                 </div>
-                <form style={{marginTop: 40}} class="product-one__item-form product-filter" action="#">
+                <form style={{ marginTop: 40 }} class="product-one__item-form product-filter" action="#">
                   <div class="product-filter__color">
                     <div class="product-filter__color-title">Color:</div>
-                    <label>
-                      <input class="product-filter__color-input" type="radio" name="color" />
+                    <label style={{ display: 'flex', alignItems: 'center' }}>
                       <span class="product-filter__color-chekbox">
-                        <span style={{ backgroundColor: '#f49ac1' }}></span>
+                        <span style={{ backgroundColor: `#${colorHex}` }}></span>
                       </span>
-                    </label>
-                    <label>
-                      <input class="product-filter__color-input" type="radio" name="color" />
-                      <span class="product-filter__color-chekbox">
-                        <span style={{ backgroundColor: '#e5e4e1' }}></span>
-                      </span>
-                    </label>
-                    <label>
-                      <input class="product-filter__color-input" type="radio" name="color" />
-                      <span class="product-filter__color-chekbox">
-                        <span style={{ backgroundColor: '#ffbc41' }} ></span>
-                      </span>
-                    </label>
-                    <label>
-                      <input class="product-filter__color-input" type="radio" name="color" />
-                      <span class="product-filter__color-chekbox">
-                        <span style={{ backgroundColor: '#b370ff' }}></span>
-                      </span>
-                    </label>
-                    <label>
-                      <input class="product-filter__color-input" type="radio" name="color" />
-                      <span class="product-filter__color-chekbox">
-                        <span style={{ backgroundColor: '#6fdf9e' }}></span>
-                      </span>
-                    </label>
-                    <label>
-                      <input class="product-filter__color-input" type="radio" name="color" />
-                      <span class="product-filter__color-chekbox">
-                        <span style={{ backgroundColor: '#ff6060' }}></span>
-                      </span>
+                      <span style={{ marginLeft: 10 }}>{colorName}</span>
                     </label>
                   </div>
                   <div class="product-filter__size">
                     <div class="product-filter__size-title">Size:</div>
-                    <label>
-                      <input class="product-filter__size-input" type="radio" name="size" />
-                      <span class="product-filter__size-chekbox">S</span>
-                    </label>
-                    <label>
-                      <input class="product-filter__size-input" type="radio" name="size" />
-                      <span class="product-filter__size-chekbox">M</span>
-                    </label>
-                    <label>
-                      <input class="product-filter__size-input" type="radio" name="size" />
-                      <span class="product-filter__size-chekbox">L</span>
-                    </label>
-                    <label>
-                      <input class="product-filter__size-input" type="radio" name="size" />
-                      <span class="product-filter__size-chekbox">XS</span>
-                    </label>
-                    <label>
-                      <input class="product-filter__size-input" type="radio" name="size" />
-                      <span class="product-filter__size-chekbox">XL</span>
-                    </label>
-                    <label>
-                      <input class="product-filter__size-input" type="radio" name="size" />
-                      <span class="product-filter__size-chekbox">XXL</span>
-                    </label>
+                    {productData?.size?.split(',').map(item => (
+                      <label>
+                        {/* <input class="product-filter__size-input" type="radio" name="size" /> */}
+                        <span class="product-filter__size-chekbox">{item}</span>
+                      </label>
+                    ))}
+
                   </div>
                   <div class="product-one__item-info product-info">
                     <ul class="product-info__list">
                       <li class="product-info__item">
-                        <div class="product-info__title">SKU</div>
-                        <div class="product-info__text">11FSE7739</div>
+                        <div class="product-info__title">Art.no</div>
+                        <div class="product-info__text">{productData?.id}</div>
                       </li>
                       <li class="product-info__item">
-                        <div class="product-info__title">Categories</div>
-                        <div class="product-info__text">Shirt</div>
+                        <div class="product-info__title">Category</div>
+                        <div class="product-info__text">{categoryItem}</div>
                       </li>
-
                     </ul>
                   </div>
 
-                  <Button onClick={handleOpen} variant="contained" style={{marginRight: 20}}>Edit</Button>
+                  {isAdmin && <Button onClick={handleOpen} variant="contained" style={{ marginRight: 20 }}>Edit</Button>}
+
                   <Modal
                     open={open}
                     onClose={handleClose}
@@ -187,9 +183,6 @@ function ProductPage() {
                             {photoPath}
                           </div>
                         </div>
-
-
-
                         <TextField
                           fullWidth
                           label="Description"
@@ -304,7 +297,9 @@ function ProductPage() {
                       </form>
                     </Box>
                   </Modal>
-                  <Button onClick={handleOpenDelete} variant="outlined">Delete</Button>
+
+                  {isAdmin && <Button onClick={handleOpenDelete} variant="outlined">Delete</Button>}
+
                   <Modal
                     open={openDelete}
                     onClose={handleCloseDelete}
@@ -312,27 +307,27 @@ function ProductPage() {
                     aria-describedby="modal-modal-description"
                   >
                     <Box sx={style}>
-                      <div id="modal-modal-title" style={{fontSize: 20, marginBottom: 40}}>
+                      <div id="modal-modal-title" style={{ fontSize: 20, marginBottom: 40 }}>
                         Are you sure you want to delete this item?
                       </div>
-                      <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Button variant="outlined" onClick={handleCloseDelete}>Cancel</Button>
                         <Button variant="contained">Delete</Button>
                       </div>
-                      
+
                     </Box>
                   </Modal>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 175 }}>
-                    <InputAmount />
+                  <div style={{ marginTop: 175 }}>
+                    {/* <InputAmount /> */}
                     <button class="product-one__item-btn" type="submit">Add to favorite</button>
                   </div>
                 </form>
               </div>
             </div>
           </div>
-          <div style={{marginBottom: 40}}>
-            <ProductTabs />
+          <div style={{ marginBottom: 40 }}>
+            <ProductTabs text={productData?.description} />
           </div>
         </div>
       </section>

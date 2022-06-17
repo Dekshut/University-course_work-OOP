@@ -1,15 +1,18 @@
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import ProductItem from "../../components/ProductItem/ProductItem";
 import Pagination from '@mui/material/Pagination';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TypeFilter from "./TypeFilter/TypeFilter";
 import PriceFilter from "./PriceFilter/PriceFilter";
 import ColorFilter from "./ColorFilter/ColorFilter";
 import SizeFilter from "./SizeFilter/SizeFilter";
 import SortFilter from "./SortFilter/SortFilter";
-import { Box, Button, Modal, TextField, Typography, InputLabel, MenuItem, FormControl, Select } from "@mui/material";
+import { Box, Button, Modal, TextField, Typography, InputLabel, MenuItem, FormControl, Select, PaginationItem } from "@mui/material";
+import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 
 import './ShopPage.scss';
+import { changeLoading } from "../../redux/slices/appSlice";
 
 const style = {
   position: 'absolute',
@@ -22,7 +25,25 @@ const style = {
   p: 4,
 };
 
+const requestFetch = (url) => {
+  return fetch(url).then(response => {
+    if (response.ok) {
+      return response.json()
+    }
+
+    return response.json().then(error => {
+      const e = new Error('Smth gone wrong')
+      e.data = error
+      throw e
+    })
+  });
+}
+
+
 function ShopPage() {
+  const { isAdmin, allColors, allCategories } = useSelector(state => state.app);
+  const dispatch = useDispatch();
+
   const [toList, setToList] = useState(false)
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -43,8 +64,37 @@ function ShopPage() {
     setCategory(event.target.value);
   };
 
+  const [searchParams, setSearchParams] = useSearchParams()
+  const gender = searchParams.get('gender');
 
+  const [productsData, setProductsData] = useState([]);
+  const [cloneProducts, setCloneProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  useEffect(() => {
+    if (currentPage === 1) {
+      setCloneProducts([...productsData.slice(currentPage - 1, currentPage + 5)])
+    } else {
+      setCloneProducts([...productsData.slice((currentPage - 1) * 6, currentPage * 6)])
+    }
+
+  }, [productsData, currentPage])
+
+  useEffect(() => {
+    dispatch(changeLoading(true))
+    const url = `http://localhost:8080/api/product/for/${gender === 'man' ? 'm' : 'w'}`;
+
+    requestFetch(url)
+      .then(data => {
+        dispatch(changeLoading(false))
+        console.log(data)
+        setProductsData(data)
+      })
+      .catch(err => {
+        dispatch(changeLoading(false))
+        console.log(err);
+      });
+  }, [gender])
 
   return (
     <div className="ShopPage">
@@ -87,7 +137,7 @@ function ShopPage() {
                   </button>
                 </div>
 
-                <Button variant="contained" onClick={handleOpen}>Add new</Button>
+                {isAdmin && <Button variant="contained" onClick={handleOpen}>Add new</Button>}
                 <Modal
                   open={open}
                   onClose={handleClose}
@@ -123,9 +173,6 @@ function ShopPage() {
                           {photoPath}
                         </div>
                       </div>
-
-
-
                       <TextField
                         fullWidth
                         label="Description"
@@ -245,16 +292,24 @@ function ShopPage() {
 
               </div>
               <div className="shop-content__inner" >
-                <ProductItem toList={toList} />
-                <ProductItem toList={toList} />
-                <ProductItem toList={toList} />
-                <ProductItem toList={toList} />
-                <ProductItem toList={toList} />
-                <ProductItem toList={toList} />
+                {cloneProducts.map(item => (
+                  <ProductItem
+                    category={allCategories.find(category => category.id === item.categoryId)}
+                    colorObj={allColors.find(color => color.id === item.colorId)}
+                    toList={toList}
+                    img={item.img}
+                    price={item.price}
+                    title={item.title}
+                    descr={item.description}
+                    id={item.id} />
+                ))}
               </div>
 
               <div className="pagination">
-                <Pagination count={10} />
+                <Pagination
+                  count={productsData.length ? Math.ceil(productsData.length / 6) : 1}
+                  onChange={(e, page) => setCurrentPage(page)}
+                />
               </div>
 
             </div>

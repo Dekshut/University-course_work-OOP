@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
-
+import { useDispatch } from 'react-redux';
+import { changeLoading } from "../../redux/slices/appSlice";
 
 
 export default function RegisterPage() {
+  const dispatch = useDispatch();
   const [succes, setSucces] = useState(false)
   const [message, setMessage] = useState('')
   const [email, setEmail] = useState('');
@@ -25,6 +27,7 @@ export default function RegisterPage() {
   }
 
   const onSubmit = () => {
+    dispatch(changeLoading(true))
     requestFetch('http://localhost:8080/api/user/register', 'POST', { email: email, password: password })
       .then(data => {
         console.log(data)
@@ -35,8 +38,10 @@ export default function RegisterPage() {
           setSucces(true)
           setMessage('')
         }
+        dispatch(changeLoading(false))
       })
       .catch(err => {
+        dispatch(changeLoading(false))
         console.log(err);
       });
   }

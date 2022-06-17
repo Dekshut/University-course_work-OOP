@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
+import { useDispatch } from 'react-redux';
+import { changeUserEmail, changeUserRole, changeLoading } from "../../redux/slices/appSlice";
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+
   const [succes, setSucces] = useState(false)
   const [message, setMessage] = useState('')
   const [email, setEmail] = useState('');
@@ -25,6 +29,8 @@ export default function LoginPage() {
   }
 
   const onSubmit = () => {
+    dispatch(changeLoading(true))
+
     requestFetch('http://localhost:8080/api/user/login', 'POST', { email: email, password: password })
       .then(data => {
         console.log(data)
@@ -34,11 +40,15 @@ export default function LoginPage() {
         } else {
           setSucces(true)
           setMessage('')
+          dispatch(changeUserRole(data.isAdmin));
+          dispatch(changeUserEmail(email));
           navigate('/')
         }
+        dispatch(changeLoading(false))
       })
       .catch(err => {
         console.log(err);
+        dispatch(changeLoading(false))
       });
   }
 
@@ -54,14 +64,14 @@ export default function LoginPage() {
             <Link class="modal__link" to="/register">REGISTER</Link>
             <Link class="modal__link modal__link--active" to="/login">LOGIN</Link>
           </div>
-          <form class="modal__form" action="#" onSubmit={(e) => { e.preventDefault(); onSubmit()}}>
+          <form class="modal__form" action="#" onSubmit={(e) => { e.preventDefault(); onSubmit() }}>
             <label class="modal__label">
               Email address*
-              <input class="modal__input" type="text" required onInput={(e) => setEmail(e.target.value)}/>
+              <input class="modal__input" type="text" required onInput={(e) => setEmail(e.target.value)} />
             </label>
             <label class="modal__label">
               Password*
-              <input class="modal__input" type="password" required onInput={(e) => setPassword(e.target.value)}/>
+              <input class="modal__input" type="password" required onInput={(e) => setPassword(e.target.value)} />
             </label>
             {message && (
               <p class="modal__text" style={{ color: 'red' }}>
