@@ -13,8 +13,12 @@ import RegisterPage from './pages/RegisterPage/RegisterPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
+import { Backdrop, CircularProgress } from '@mui/material';
+import { useSelector} from 'react-redux';
 
 function App() {
+  const {loading} = useSelector(state => state.app)
+
   return (
     <>
       <Header />
@@ -30,6 +34,14 @@ function App() {
         <Route path="/product" element={<ProductPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+
+      <Backdrop
+        sx={{ color: '#34c3ff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        // onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
       <Footer />
     </>

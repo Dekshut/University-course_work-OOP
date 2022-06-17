@@ -4,13 +4,13 @@
 @import 'libs';
 @import 'global';
 
-.see-new{
+.see-new {
   padding: 10px;
 
   & a {
     display: block;
 
-    &:hover{
+    &:hover {
       color: $accent;
       transition: all .3s;
     }
@@ -694,18 +694,31 @@
   }
 
   &__link {
+    cursor: pointer;
     text-transform: uppercase;
     color: $title;
     display: inline-block;
     border: 1px solid $accent;
     padding: 14px 27px;
     margin-top: 55px;
+
+    &:hover{
+      background: $accent;
+      color: #fff;
+      transition: all .3s;
+    }
   }
 }
 
 .product-item {
   max-width: 370px;
   text-align: center;
+
+  & img {
+    min-width: 370px;
+    height: 100%;
+    object-fit: cover;
+  }
 
   &:hover {
     .darkBg {
@@ -731,10 +744,11 @@
 
     .product-item__img-box {
       height: 250px;
-      min-width: 200px;
+      width: 250px;
       margin-bottom: 0;
 
       img {
+        min-width: 250px;
         height: 250px;
       }
     }
@@ -808,6 +822,7 @@
       padding: 30px 40px;
       border: 1px solid #ececec;
       border-left: none;
+      width: 530px;
     }
   }
 
@@ -1721,7 +1736,6 @@
   &__item-btn {
     @extend %btn;
     border: none;
-    margin-left: 15px;
     cursor: pointer;
   }
 }
@@ -2121,7 +2135,7 @@
     grid-column-gap: 30px;
 
     .product-item__img-box {
-      height: auto;
+      // height: auto;
     }
 
     .product-item__title {

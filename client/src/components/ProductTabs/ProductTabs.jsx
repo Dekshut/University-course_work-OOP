@@ -31,7 +31,7 @@ function a11yProps(index) {
   };
 }
 
-export default function ProductTabs() {
+export default function ProductTabs({text}) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -54,7 +54,7 @@ export default function ProductTabs() {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iure est vel minus qui dolores molestias quaerat praesentium dolorum voluptates, quae culpa deserunt, optio quod quia repudiandae. Enim voluptas harum distinctio.
+        {text}
       </TabPanel>
       {/* <TabPanel value={value} index={1}>
         Item Two

@@ -7,6 +7,8 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import './ColorFilter.scss'
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { changeAllColors } from '../../../redux/slices/appSlice';
 
 const style = {
   position: 'absolute',
@@ -34,6 +36,10 @@ const requestFetch = (url) => {
 }
 
 function ColorFilter() {
+  const dispatch = useDispatch();
+
+  const { isAdmin, allColors } = useSelector(state => state.app);
+  // const [allColors, setAllColors] = React.useState([]);
   const [color, setColor] = React.useState('');
   const [colorInput, setColorInput] = React.useState('');
 
@@ -50,7 +56,8 @@ function ColorFilter() {
 
     requestFetch(url)
       .then(data => {
-        console.log(data)
+        // console.log(data)
+        dispatch(changeAllColors(data))
       })
       .catch(err => {
         console.log(err);
@@ -62,7 +69,7 @@ function ColorFilter() {
     <div className="filter__item filter-color">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <h3 className="filter__title">Color Filter</h3>
-        <AddIcon onClick={handleOpen} style={{ color: '#fff', background: '#34c3ff', borderRadius: 5, cursor: 'pointer' }} />
+        {isAdmin && <AddIcon onClick={handleOpen} style={{ color: '#fff', background: '#34c3ff', borderRadius: 5, cursor: 'pointer' }} />}
       </div>
 
       <Modal
@@ -116,46 +123,13 @@ function ColorFilter() {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={10}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `red` }} />Red
-            </div>
-          </MenuItem>
-          <MenuItem value={20}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Yellow` }} />Yellow
-            </div>
-          </MenuItem>
-          <MenuItem value={30}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Brown` }} />Brown
-            </div>
-          </MenuItem>
-          <MenuItem value={40}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Blue` }} />Blue
-            </div>
-          </MenuItem>
-          <MenuItem value={50}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `White` }} />White
-            </div>
-          </MenuItem>
-          <MenuItem value={60}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Pink` }} />Pink
-            </div>
-          </MenuItem>
-          <MenuItem value={70}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `Black` }} />Black
-            </div>
-          </MenuItem>
-          <MenuItem value={80}>
-            <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-              <div className='colorRect' style={{ background: `green` }} />Green
-            </div>
-          </MenuItem>
+          {allColors?.map(item => (
+            <MenuItem value={item.id}>
+              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
+                <div className='colorRect' style={{ background: item.hex }} />{item.name}
+              </div>
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
     </div>
