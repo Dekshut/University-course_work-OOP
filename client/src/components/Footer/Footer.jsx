@@ -16,7 +16,7 @@ function Footer({ userId }) {
                 No. 342 - London Oxford Street,
                 012 United States
               </a>
-              <a class="footer-top__email" href="mailto:Youremail@gmail.com">malbo@gmail.com</a>
+              <a class="footer-top__email" href="mailto:Youremail@gmail.com">malbo.catalog@gmail.com</a>
               <a class="footer-top__phone" href="tel:+02838388393">+0283 838 8393</a>
               <ul class="footer-top__social-list">
                 <li class="footer-top__social-item">
