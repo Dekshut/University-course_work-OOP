@@ -1,11 +1,12 @@
 const Router = require('express')
 const colorController = require('../controller/colorController')
+const passport = require('passport')
 
-const router = new Router() 
+const router = new Router()
 
 router.get('/:id', colorController.findOne)
 router.get('/', colorController.getAllColors)
 router.post('/', colorController.createColor)
-router.delete('/:id', colorController.deleteColor)
+router.delete('/:id', passport.authenticate('jwt', { session: false }), colorController.deleteColor)
 
 module.exports = router

@@ -4,7 +4,7 @@ const errorHandler = require('../utils/errorHandler')
 class ColorController {
 
   async createColor(req, res) {
-    const candidate = await Color.findOne({ hex: req.body.hex })
+    const candidate = await Color.findOne({ where: { hex: req.body.hex } })
     if (candidate) {
       res.status(409).json({
         message: 'This color already exists'
