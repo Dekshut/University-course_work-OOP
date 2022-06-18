@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { useDispatch } from 'react-redux';
-import { changeUserEmail, changeUserRole, changeLoading } from "../../redux/slices/appSlice";
+import { changeUserEmail, changeUserRole, changeLoading, changeUserId, changeToken } from "../../redux/slices/appSlice";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -42,6 +42,8 @@ export default function LoginPage() {
           setMessage('')
           dispatch(changeUserRole(data.isAdmin));
           dispatch(changeUserEmail(email));
+          dispatch(changeUserId(data.idUser))
+          dispatch(changeToken(data.token))
           navigate('/')
         }
         dispatch(changeLoading(false))

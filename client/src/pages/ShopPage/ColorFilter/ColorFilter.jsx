@@ -21,23 +21,7 @@ const style = {
   p: 4,
 };
 
-const requestFetch = (url) => {
-  return fetch(url).then(response => {
-    if (response.ok) {
-      return response.json()
-    }
-
-    return response.json().then(error => {
-      const e = new Error('Smth gone wrong')
-      e.data = error
-      throw e
-    })
-  });
-}
-
 function ColorFilter() {
-  const dispatch = useDispatch();
-
   const { isAdmin, allColors } = useSelector(state => state.app);
   // const [allColors, setAllColors] = React.useState([]);
   const [color, setColor] = React.useState('');
@@ -50,19 +34,6 @@ function ColorFilter() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  React.useEffect(() => {
-    const url = 'http://localhost:8080/api/color';
-
-    requestFetch(url)
-      .then(data => {
-        // console.log(data)
-        dispatch(changeAllColors(data))
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, [])
 
 
   return (
