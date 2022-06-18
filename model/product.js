@@ -12,22 +12,22 @@ const Product = sequelize.define("product", {
     },
     img: {
         type: DataTypes.STRING,
-        unique: true, 
+        unique: true,
         allowNull: false
     },
     title: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING,
         allowNull: false
     },
     description: {
         type: DataTypes.STRING
     },
     price: {
-        type: DataTypes.FLOAT, 
+        type: DataTypes.FLOAT,
         allowNull: false
     },
     gender: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING,
         allowNull: false
     },
     size: {
