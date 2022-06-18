@@ -23,11 +23,11 @@ class ColorController {
   }
 
   async deleteColor(req, res) {
-    const candidate = await Color.findOne({ where: { id: req.body.id } })
+    const candidate = await Color.findOne({ where: { id: req.params.id } })
     if (candidate) {
       try {
         await Color.destroy({
-          where: { id: req.body.id }
+          where: { id: req.params.id }
         })
         res.status(201).json({
           message: 'Color removed successfully'
