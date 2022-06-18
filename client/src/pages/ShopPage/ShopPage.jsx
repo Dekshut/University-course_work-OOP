@@ -190,10 +190,14 @@ function ShopPage() {
   const [sizeFilter, setSizeFilter] = useState([])
   useEffect(() => {
     const filteredProduct = []
+    const filteredProductIds = [...productsData]
+
     sizeFilter.forEach(size => {
-      productsData.forEach(product => {
-        if (product.size.includes(size)) {
+      
+      productsData.forEach((product, index) => {
+        if (product.size.includes(size) && !filteredProductIds.includes(product.id)) {
           filteredProduct.push(product)
+          filteredProductIds.push(product.id)
         }
       });
     });
