@@ -1,22 +1,27 @@
 const nodemailer = require("nodemailer")
 
 module.exports = function (req, res) {
-    var transport = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+    const transport = nodemailer.createTransport({
+        service: 'hotmail',
         auth: {
-            user: "fa2f7376617c43",
-            pass: "d656d99df01896"
+            user: 'malbo_catalog@outlook.com',
+            pass: '$FBP}l4wPa'
+        },
+        tls: {
+            rejectUnauthorized: false
         }
     })
     var opt = {
-        from: req.body.from,
-        to: 'malbo@gmail.com',
-        subject: req.body.subject,
-        text: req.body.message
+        from: 'malbo_catalog@outlook.com',
+        to: req.body.email,
+        subject: 'RE:' + req.body.subject,
+        text: "Hello, " + req.body.name + ", thank you for contacting the topic `" + req.body.subject + "` soon our operator will contact you on your message: " + req.body.text
     }
     transport.sendMail(opt, function (err) {
-        if (err) console.error(err);
-        res.status(200).send('Send message');
+        if (err) {
+            console.log(err)
+            res.status(500).json('Oops somethinf wrong')
+        }
+        else { res.status(200).send('Send message'); }
     });
 };

@@ -1,4 +1,5 @@
 const Color = require('../model/color')
+const Product = require('../model/product')
 const errorHandler = require('../utils/errorHandler')
 
 class ColorController {
@@ -23,11 +24,17 @@ class ColorController {
   }
 
   async deleteColor(req, res) {
-    const candidate = await Color.findOne({ where: { id: req.body.id } })
+    const candidate = await Color.findOne({ where: { id: req.params.id } })
     if (candidate) {
       try {
+        await Product.findAll(
+          {
+            include: [{ model: Color,
+            where:{id: req.params.id}}]
+        }
+        )
         await Color.destroy({
-          where: { id: req.body.id }
+          where: { id: req.params.id }
         })
         res.status(201).json({
           message: 'Color removed successfully'
