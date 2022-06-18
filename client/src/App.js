@@ -14,14 +14,30 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 import { Backdrop, CircularProgress } from '@mui/material';
-import { useSelector} from 'react-redux';
+import { useSelector, useDispatch} from 'react-redux';
+import { useEffect } from 'react';
+import { getAllColors, getFavoriten, getAllCategories } from './redux/slices/appSlice';
 
 function App() {
-  const {loading} = useSelector(state => state.app)
+  const dispatch = useDispatch()
+  const { loading, favorite, userId} = useSelector(state => state.app)
+
+  // console.log(favorite)
+  useEffect(() => {
+    dispatch(getAllColors())
+    dispatch(getAllCategories())
+  }, [])
+
+  useEffect(() => {
+    if (userId !== null){
+      dispatch(getFavoriten(userId))
+    }
+    
+  }, [userId])
 
   return (
     <>
-      <Header />
+      <Header favorite={favorite[0]} userId={userId}/>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -36,7 +52,7 @@ function App() {
       </Routes>
 
       <Backdrop
-        sx={{ color: '#34c3ff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: '#34c3ff', zIndex: 1400 }}
         open={loading}
         // onClick={handleClose}
       >

@@ -8,7 +8,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import './ColorFilter.scss'
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { changeAllColors } from '../../../redux/slices/appSlice';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { getAllColors } from '../../../redux/slices/appSlice';
 
 const style = {
   position: 'absolute',
@@ -21,27 +22,14 @@ const style = {
   p: 4,
 };
 
-const requestFetch = (url) => {
-  return fetch(url).then(response => {
-    if (response.ok) {
-      return response.json()
-    }
-
-    return response.json().then(error => {
-      const e = new Error('Smth gone wrong')
-      e.data = error
-      throw e
-    })
-  });
-}
-
 function ColorFilter() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const { isAdmin, allColors } = useSelector(state => state.app);
-  // const [allColors, setAllColors] = React.useState([]);
+  const { isAdmin, allColors, token } = useSelector(state => state.app);
+  const [message, setMessage] = React.useState('');
   const [color, setColor] = React.useState('');
-  const [colorInput, setColorInput] = React.useState('');
+  const [colorInput, setColorInput] = React.useState('#000000');
+  const [colorName, setColorName] = React.useState('');
 
   const handleChange = (event) => {
     setColor(event.target.value);
@@ -51,19 +39,58 @@ function ColorFilter() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  React.useEffect(() => {
-    const url = 'http://localhost:8080/api/color';
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const handleOpenDelete = () => setOpenDelete(true);
+  const handleCloseDelete = () => setOpenDelete(false);
 
-    requestFetch(url)
-      .then(data => {
-        // console.log(data)
-        dispatch(changeAllColors(data))
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, [])
+  const submitDelete = async () => {
+    const headers = {
+      // 'Content-Type': 'application/json',
+      'Authorization': token,
+    }
 
+    await fetch(`http://localhost:8080/api/color/${allColors.find(item => item.name === color)?.id}`, {
+      method: 'DELETE',
+      headers: headers
+    }).then(response => {
+      handleCloseDelete()
+      return response.json()
+    });
+
+    dispatch(getAllColors())
+  }
+
+  const onSubmit = async () => {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+    }
+
+    const body = {
+      name: colorName,
+      hex: colorInput
+    }
+
+    const res = await fetch('http://localhost:8080/api/color', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: headers
+    }).then(response => {
+      if (response.ok) {
+        handleClose()
+      }
+
+      return response.json()
+    });
+
+    if (res.message) {
+      setMessage(res.message)
+    } else {
+      setMessage('')
+    }
+
+    dispatch(getAllColors())
+  }
 
   return (
     <div className="filter__item filter-color">
@@ -78,27 +105,48 @@ function ColorFilter() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <form>
+        <form onSubmit={(e) => { e.preventDefault(); onSubmit() }}>
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Add new color
             </Typography>
             <div className='color-pallete'>
-              <input onInput={(e) => setColorInput(e.target.value)} type='color' />
+              <input value={colorInput} onInput={(e) => setColorInput(e.target.value)} type='color' required />
               <ArrowForwardIosIcon />
-              <div>{colorInput || 'Select color!'}</div>
+              <div>{colorInput}</div>
             </div>
 
             <TextField
+              required
               fullWidth
               style={{ marginBottom: 30 }}
               label="Color Name"
               variant='outlined'
+              onInput={(e) => setColorName(e.target.value)}
             />
 
-            <Button variant="contained" type='submit'>Confirm</Button>
+            <Button variant="contained" type='submit' style={{ marginRight: 20 }}>Confirm</Button>
+            {message && <span style={{ color: '#d32f2f' }}>{message}!</span>}
           </Box>
         </form>
+      </Modal>
+
+      <Modal
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <div id="modal-modal-title" style={{ fontSize: 20, marginBottom: 40 }}>
+            Are you sure you want to delete {color} color?
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button variant="outlined" onClick={handleCloseDelete}>Cancel</Button>
+            <Button variant="contained" onClick={submitDelete}>Delete</Button>
+          </div>
+
+        </Box>
       </Modal>
 
       <FormControl sx={{ m: 1, minWidth: 300, margin: 0 }} >
@@ -124,10 +172,15 @@ function ColorFilter() {
             <em>None</em>
           </MenuItem>
           {allColors?.map(item => (
-            <MenuItem value={item.id}>
-              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                <div className='colorRect' style={{ background: item.hex }} />{item.name}
+            <MenuItem value={item.name}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
+                  <div className='colorRect' style={{ background: item.hex }} />{item.name}
+                </div>
+
+                {isAdmin && <DeleteOutlineIcon onClick={handleOpenDelete} style={{ color: '#d32f2f', borderRadius: 5, cursor: 'pointer' }} />}
               </div>
+
             </MenuItem>
           ))}
         </Select>

@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-export const getFavoriten = createAsyncThunk(
-  'app/favoriten',
+export const getAllCategories = createAsyncThunk(
+  'app/categories',
   async (userId, thunkAPI) => {
-    const favorites = await fetch(`http://localhost:8080/api/fav/${userId}`).then(response => {
+    const colors = await fetch('http://localhost:8080/api/category').then(response => {
       if (response.ok) {
         return response.json()
       }
@@ -15,13 +15,52 @@ export const getFavoriten = createAsyncThunk(
       })
     });
 
-    return favorites.data
+    return colors
+  }
+);
+
+export const getAllColors = createAsyncThunk(
+  'app/colors',
+  async (userId, thunkAPI) => {
+    const colors = await fetch('http://localhost:8080/api/color').then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+
+      return response.json().then(error => {
+        const e = new Error('Smth gone wrong')
+        e.data = error
+        throw e
+      })
+    });
+
+    return colors
+  }
+);
+
+export const getFavoriten = createAsyncThunk(
+  'app/favoriten',
+  async (userId, thunkAPI) => {
+    const favorites = await fetch(`http://localhost:8080/api/product/fav/${userId}`).then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+
+      return response.json().then(error => {
+        const e = new Error('Smth gone wrong')
+        e.data = error
+        throw e
+      })
+    });
+
+    return favorites
   }
 );
 
 const appSlice = createSlice({
   name: 'app',
   initialState: {
+    token: null,
     userId: null,
     isAdmin: false,
     email: '',
@@ -38,28 +77,43 @@ const appSlice = createSlice({
       state.email = payload;
     },
     logout(state) {
+      state.favorite = [];
+      state.userId = null;
+      state.token = null;
       state.email = '';
       state.isAdmin = false
     },
     changeLoading(state, { payload }) {
       state.loading = payload;
     },
-    changeAllColors(state, { payload }) {
-      state.allColors = payload;
-    },
-    changeAllCategories(state, { payload }) {
-      state.allCategories = payload;
-    },
     changeUserId(state, { payload }) {
       state.userId = payload;
     },
+    changeToken(state, { payload }) {
+      state.token = payload;
+    },
+    
   },
   extraReducers: builder => {
     builder.addCase(getFavoriten.pending, (state) => {
       state.loading = true;
     })
-    builder.addCase(getFavoriten.fulfilled, (state, { payload }) => {
-      state.favorite = payload;
+    builder.addCase(getAllColors.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(getAllCategories.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(getFavoriten.fulfilled, (state, {payload: data}) => {
+      state.favorite = data;
+      state.loading = false;
+    })
+    builder.addCase(getAllColors.fulfilled, (state, { payload: data }) => {
+      state.allColors = data;
+      state.loading = false;
+    })
+    builder.addCase(getAllCategories.fulfilled, (state, { payload: data }) => {
+      state.allCategories = data;
       state.loading = false;
     })
   }
@@ -67,4 +121,4 @@ const appSlice = createSlice({
 
 export default appSlice.reducer
 
-export const { changeUserRole, changeUserEmail, logout, changeLoading, changeAllCategories, changeAllColors, changeUserId } = appSlice.actions
+export const { changeUserRole, changeUserEmail, logout, changeLoading, changeUserId, changeToken } = appSlice.actions

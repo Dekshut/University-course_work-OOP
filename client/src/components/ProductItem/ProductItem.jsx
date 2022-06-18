@@ -1,8 +1,37 @@
 import { Link } from 'react-router-dom';
 import ReadMoreOutlinedIcon from '@mui/icons-material/ReadMoreOutlined';
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'
+import { getFavoriten } from '../../redux/slices/appSlice';
+
+const requestFetch = (url, method, body = null) => {
+  const headers = {
+    'Content-Type': 'application/json'
+  }
+
+  return fetch(url, {
+    method: method,
+    headers: headers
+  }).then(response => {
+    return response.json()
+  });
+}
+
 
 function ProductItem({ toList, img, title, descr, price, colorId, id, size, colorObj, category }) {
+  const dispatch = useDispatch()
+  const { userId } = useSelector(state => state.app)
+  const navigate = useNavigate();
+
+  const addToFavorite = async (e) => {
+    if (userId === null){
+      navigate('/login')
+    } else {
+      await requestFetch(`http://localhost:8080/api/product/fav/?userId=${userId}&productId=${id}`, 'POST')
+      dispatch(getFavoriten(userId))
+    }
+  }
 
   return (
     <div className={`product-item ${toList && 'product-item--list'}`}>
@@ -16,7 +45,7 @@ function ProductItem({ toList, img, title, descr, price, colorId, id, size, colo
             <ReadMoreOutlinedIcon />
           </Link>
 
-          <div className="product-item__link" href="#">
+          <div className="product-item__link" onClick={addToFavorite}>
             <FavoriteOutlinedIcon />
           </div>
 

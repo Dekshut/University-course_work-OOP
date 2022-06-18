@@ -10,7 +10,8 @@ import img3 from '../../images/product/3.jpg';
 import img4 from '../../images/product/4.jpg';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { changeLoading } from "../../redux/slices/appSlice";
+import { changeLoading, getFavoriten } from "../../redux/slices/appSlice";
+import { useNavigate } from 'react-router-dom'
 
 const style = {
   position: 'absolute',
@@ -23,23 +24,23 @@ const style = {
   p: 4,
 };
 
-const requestFetch = (url) => {
-  return fetch(url).then(response => {
-    if (response.ok) {
-      return response.json()
-    }
+const requestFetch = (url, method = 'GET', body = null) => {
+  const headers = {
+    'Content-Type': 'application/json'
+  }
 
-    return response.json().then(error => {
-      const e = new Error('Smth gone wrong')
-      e.data = error
-      throw e
-    })
+  return fetch(url, {
+    method: method,
+    headers: headers
+  }).then(response => {
+    return response.json()
   });
 }
 
+
 function ProductPage({ colorObj }) {
   const dispatch = useDispatch()
-  const { isAdmin } = useSelector(state => state.app);
+  const { isAdmin, userId } = useSelector(state => state.app);
   const [productImg, setProductImg] = useState(img1);
 
   const [open, setOpen] = useState(false);
@@ -89,6 +90,18 @@ function ProductPage({ colorObj }) {
       });
   }, [id])
 
+
+  const navigate = useNavigate();
+
+  const addToFavorite = async (e) => {
+    if (userId === null) {
+      navigate('/login')
+    } else {
+      await requestFetch(`http://localhost:8080/api/product/fav/?userId=${userId}&productId=${id}`, 'POST')
+      dispatch(getFavoriten(userId))
+    }
+  }
+
   return (
     <main class="main">
       <Breadcrumbs title={'Product'} />
@@ -113,7 +126,7 @@ function ProductPage({ colorObj }) {
                     <div class="product-one__price-new">${productData?.price}</div>
                   </div>
                 </div>
-                <form style={{ marginTop: 40 }} class="product-one__item-form product-filter" action="#">
+                <div style={{ marginTop: 40 }} class="product-one__item-form product-filter" action="#">
                   <div class="product-filter__color">
                     <div class="product-filter__color-title">Color:</div>
                     <label style={{ display: 'flex', alignItems: 'center' }}>
@@ -124,7 +137,7 @@ function ProductPage({ colorObj }) {
                     </label>
                   </div>
                   <div class="product-filter__size">
-                    <div class="product-filter__size-title">Size:</div>
+                    <div class="product-filter__size-title">Sizes:</div>
                     {productData?.size?.split(',').map(item => (
                       <label>
                         {/* <input class="product-filter__size-input" type="radio" name="size" /> */}
@@ -308,7 +321,7 @@ function ProductPage({ colorObj }) {
                   >
                     <Box sx={style}>
                       <div id="modal-modal-title" style={{ fontSize: 20, marginBottom: 40 }}>
-                        Are you sure you want to delete this item?
+                        Are you sure you want to delete {productData.title}?
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Button variant="outlined" onClick={handleCloseDelete}>Cancel</Button>
@@ -320,9 +333,9 @@ function ProductPage({ colorObj }) {
 
                   <div style={{ marginTop: 175 }}>
                     {/* <InputAmount /> */}
-                    <button class="product-one__item-btn" type="submit">Add to favorite</button>
+                    <button class="product-one__item-btn" onClick={addToFavorite}>Add to favorite</button>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
           </div>
