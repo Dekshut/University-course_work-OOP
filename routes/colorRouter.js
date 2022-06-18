@@ -6,7 +6,7 @@ const router = new Router()
 
 router.get('/:id', colorController.findOne)
 router.get('/', colorController.getAllColors)
-router.post('/', colorController.createColor)
+router.post('/', passport.authenticate('jwt', { session: false }), colorController.createColor)
 router.delete('/:id', passport.authenticate('jwt', { session: false }), colorController.deleteColor)
 
 module.exports = router
