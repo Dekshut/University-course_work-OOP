@@ -22,7 +22,7 @@ function App() {
   const dispatch = useDispatch()
   const { loading, favorite, userId} = useSelector(state => state.app)
 
-  console.log(favorite)
+  // console.log(favorite)
   useEffect(() => {
     dispatch(getAllColors())
     dispatch(getAllCategories())
@@ -52,7 +52,7 @@ function App() {
       </Routes>
 
       <Backdrop
-        sx={{ color: '#34c3ff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: '#34c3ff', zIndex: 1400 }}
         open={loading}
         // onClick={handleClose}
       >

@@ -1,10 +1,10 @@
 --Для заполнения базы данными
 insert into colors values
-(1,'#FF0000','Red'),
-(2,'#FFFF00','Yellow'),
-(3,'#0000FF','Blue'),
-(4,'#000000','Black'),
-(5,'#FFFFFF','White');
+(default,'#FF0000','Red'),
+(default,'#FFFF00','Yellow'),
+(default,'#0000FF','Blue'),
+(default,'#000000','Black'),
+(default,'#FFFFFF','White');
 
 insert into categories values
 (1,'T-Shirts'),

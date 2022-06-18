@@ -43,11 +43,27 @@ function ColorFilter() {
   const handleOpenDelete = () => setOpenDelete(true);
   const handleCloseDelete = () => setOpenDelete(false);
 
-  const onSubmit = async () => {
+  const submitDelete = async () => {
+    const headers = {
+      // 'Content-Type': 'application/json',
+      'Authorization': token,
+    }
 
+    await fetch(`http://localhost:8080/api/color/${allColors.find(item => item.name === color)?.id}`, {
+      method: 'DELETE',
+      headers: headers
+    }).then(response => {
+      handleCloseDelete()
+      return response.json()
+    });
+
+    dispatch(getAllColors())
+  }
+
+  const onSubmit = async () => {
     const headers = {
       'Content-Type': 'application/json',
-      token: token,
+      'Authorization': token,
     }
 
     const body = {
@@ -60,17 +76,19 @@ function ColorFilter() {
       body: JSON.stringify(body),
       headers: headers
     }).then(response => {
-      if (response.ok){
+      if (response.ok) {
         handleClose()
       }
 
       return response.json()
     });
 
-    if(res.message){
+    if (res.message) {
       setMessage(res.message)
+    } else {
+      setMessage('')
     }
-    
+
     dispatch(getAllColors())
   }
 
@@ -107,8 +125,8 @@ function ColorFilter() {
               onInput={(e) => setColorName(e.target.value)}
             />
 
-            <Button variant="contained" type='submit' style={{marginRight: 20}}>Confirm</Button>
-            {message && <span style={{ color: '#d32f2f'}}>{message}!</span>}
+            <Button variant="contained" type='submit' style={{ marginRight: 20 }}>Confirm</Button>
+            {message && <span style={{ color: '#d32f2f' }}>{message}!</span>}
           </Box>
         </form>
       </Modal>
@@ -125,7 +143,7 @@ function ColorFilter() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button variant="outlined" onClick={handleCloseDelete}>Cancel</Button>
-            <Button variant="contained">Delete</Button>
+            <Button variant="contained" onClick={submitDelete}>Delete</Button>
           </div>
 
         </Box>
