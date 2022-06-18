@@ -321,7 +321,7 @@ function ProductPage({ colorObj }) {
                   >
                     <Box sx={style}>
                       <div id="modal-modal-title" style={{ fontSize: 20, marginBottom: 40 }}>
-                        Are you sure you want to delete this item?
+                        Are you sure you want to delete {productData.title}?
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Button variant="outlined" onClick={handleCloseDelete}>Cancel</Button>

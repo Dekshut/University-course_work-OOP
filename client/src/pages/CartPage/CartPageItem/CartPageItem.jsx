@@ -6,7 +6,7 @@ import { Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { getFavoriten } from '../../../redux/slices/appSlice';
 
-export default function CartPageItem({ colorObj, category, size, title, price, id, img }) {
+export default function CartPageItem({ colorObj, category, size, title, price, id, img, favId }) {
   const dispatch = useDispatch();
   const {userId} = useSelector(state => state.app)
 
@@ -15,7 +15,7 @@ export default function CartPageItem({ colorObj, category, size, title, price, i
       'Content-Type': 'application/json'
     }
     
-    await fetch(`http://localhost:8080/api/product/fav/${id}`, {
+    await fetch(`http://localhost:8080/api/product/fav/${favId}`, {
       method: 'DELETE',
       headers: headers
     }).then(response => {

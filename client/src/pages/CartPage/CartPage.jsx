@@ -15,8 +15,9 @@ export default function CartPage() {
 
       <section className='cartPage'>
         <div className='cartPage-items'>
-          {favorite.map(item => (
+          {favorite[0]?.products.map(item => (
             <CartPageItem
+              favId={item.favorite.id}
               id={item.id}
               category={allCategories.find(category => category.id === item.categoryId)}
               colorObj={allColors.find(color => color.id === item.colorId)}
@@ -31,7 +32,7 @@ export default function CartPage() {
 
           <div className='cartPage-actions__text'>
             <div>Total</div>
-            <div>{Math.round(favorite.reduce((sum, item) => sum + item.price, 0) * 100) / 100}$</div>
+            <div>{Math.round(favorite[0]?.products.reduce((sum, item) => sum + item.price, 0) * 100) / 100}$</div>
           </div>
 
           <Link to='/contact' style={{ width: '100%', fontWeight: 700, marginTop: 20 }}>

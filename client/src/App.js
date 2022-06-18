@@ -22,6 +22,7 @@ function App() {
   const dispatch = useDispatch()
   const { loading, favorite, userId} = useSelector(state => state.app)
 
+  console.log(favorite)
   useEffect(() => {
     dispatch(getAllColors())
     dispatch(getAllCategories())
@@ -36,7 +37,7 @@ function App() {
 
   return (
     <>
-      <Header favorite={favorite} userId={userId}/>
+      <Header favorite={favorite[0]} userId={userId}/>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
