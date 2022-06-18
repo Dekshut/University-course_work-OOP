@@ -6,11 +6,12 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function SortFilter() {
-  const [age, setAge] = React.useState('');
+export default function SortFilter({ setSortFilter}) {
+  const [sort, setSort] = React.useState('');
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setSort(event.target.value);
+    setSortFilter(event.target.value)
   };
 
   return (
@@ -19,16 +20,15 @@ export default function SortFilter() {
       <Select
         labelId="demo-select-small"
         id="demo-select-small"
-        value={age}
+        value={sort}
         label="Sort By"
         onChange={handleChange}
       >
-        <MenuItem value="">
+        <MenuItem value={null}>
           <em>Default</em>
         </MenuItem>
-        <MenuItem value={10}>Newest</MenuItem>
-        <MenuItem value={20}>Lowest Price</MenuItem>
-        <MenuItem value={30}>Highest Price</MenuItem>
+        <MenuItem value={0}>Lowest Price</MenuItem>
+        <MenuItem value={1}>Highest Price</MenuItem>
       </Select>
     </FormControl>
   );

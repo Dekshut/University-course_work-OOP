@@ -28,8 +28,7 @@ function TopBanner() {
                 New Brand Collection
               </h3>
               <p class="top-slider__text">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                et dolore magna aliqua. Ipsum.
+                By choosing Malbo, you first and foremost get quality at an affordable price. We appreciate each of our customers, we are proud of the many positive reviews.
               </p>
               <button onClick={handleClick} class="top-slider__link">SEE NOW</button>
               <Popover

@@ -1,16 +1,24 @@
 import { useEffect } from 'react';
 import './TypeFilter.scss'
 import { useSelector, useDispatch } from 'react-redux';
-import { changeAllCategories } from '../../../redux/slices/appSlice';
+import ClearIcon from '@mui/icons-material/Clear';
 
-function TypeFilter() {
-  const {allCategories} = useSelector(state => state.app)
+function TypeFilter({ setCategoryFilter, categoryFilter }) {
+  const { allCategories } = useSelector(state => state.app)
 
   return (
     <div className="typeFilter">
       {allCategories.map(item => (
-        <button className="filterBtn">{item.name}</button>
+        <button className="filterBtn" style={{ color: categoryFilter === item.id ? '#34c3ff' : '' }} onClick={() => setCategoryFilter(item.id)}>{item.name}</button>
       ))}
+
+      {categoryFilter ? (
+        <button className="filterBtn" onClick={() => setCategoryFilter()}>
+          <ClearIcon />
+        </button>
+      ): ''}
+      
+
     </div>
   );
 }

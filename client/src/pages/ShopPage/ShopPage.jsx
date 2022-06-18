@@ -70,7 +70,6 @@ function ShopPage() {
     setSelectedGender('')
   };
 
-
   const handleChangeColor = (event) => {
     setColor(event.target.value);
   };
@@ -86,19 +85,32 @@ function ShopPage() {
 
   const [productsData, setProductsData] = useState([]);
   const [cloneProducts, setCloneProducts] = useState([]);
+  const [filteredCloneData, setFilteredCloneData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rerender, setRerender] = useState(false);
 
   useEffect(() => {
     if (currentPage === 1) {
-      setCloneProducts([...productsData.slice(currentPage - 1, currentPage + 5)])
+      setCloneProducts([...filteredCloneData.slice(currentPage - 1, currentPage + 5)])
     } else {
-      setCloneProducts([...productsData.slice((currentPage - 1) * 6, currentPage * 6)])
+      setCloneProducts([...filteredCloneData.slice((currentPage - 1) * 6, currentPage * 6)])
     }
-
-  }, [productsData, currentPage])
+  }, [filteredCloneData, currentPage])
 
   useEffect(() => {
+    setFilteredCloneData([...productsData])
+
+    const allPrices = []
+    productsData.forEach(product => {
+      allPrices.push(product.price)
+    });
+
+    setMinPrice(Number.isFinite(Math.min(...allPrices)) ? Math.min(...allPrices) : 0)
+    setMaxPrice(Number.isFinite(Math.max(...allPrices)) ? Math.max(...allPrices) : 1)
+  }, [productsData])
+
+  useEffect(() => {
+    setCategoryFilter()
     dispatch(changeLoading(true))
     const url = `http://localhost:8080/api/product/for/${gender === 'man' ? 'm' : 'w'}`;
 
@@ -152,10 +164,77 @@ function ShopPage() {
 
     await Axios.post('https://api.cloudinary.com/v1_1/malbo/image/upload', formData)
       .then(response => {
-        setPhotoPath(response.data.url); 
+        setPhotoPath(response.data.url);
         dispatch(changeLoading(false))
       })
   }
+
+  const [categoryFilter, setCategoryFilter] = useState()
+  useEffect(() => {
+    if (categoryFilter !== undefined) {
+      setFilteredCloneData(productsData.filter((item) => item.categoryId === categoryFilter))
+    } else {
+      setFilteredCloneData([...productsData])
+    }
+  }, [categoryFilter])
+
+  const [colorFilter, setColorFilter] = useState()
+  useEffect(() => {
+    if (colorFilter === undefined) {
+      setFilteredCloneData([...productsData])
+    } else {
+      setFilteredCloneData(productsData.filter((item) => item.colorId === colorFilter))
+    }
+  }, [colorFilter])
+
+  const [sizeFilter, setSizeFilter] = useState([])
+  useEffect(() => {
+    const filteredProduct = []
+    sizeFilter.forEach(size => {
+      productsData.forEach(product => {
+        if (product.size.includes(size)) {
+          filteredProduct.push(product)
+        }
+      });
+    });
+
+    if (filteredProduct.length) {
+      setFilteredCloneData(filteredProduct)
+    } else {
+      setFilteredCloneData([...productsData])
+    }
+  }, [sizeFilter])
+
+  const [maxPrice, setMaxPrice] = useState(100)
+  const [minPrice, setMinPrice] = useState(0)
+  const [priceFilter, setPriceFilter] = useState()
+  useEffect(() => {
+    const filteredProduct = []
+    productsData.forEach(product => {
+      if (product.price >= priceFilter[0] && product.price <= priceFilter[1]) {
+        filteredProduct.push(product)
+      }
+    });
+
+    if (filteredProduct.length) {
+      setFilteredCloneData(filteredProduct)
+    } else {
+      setFilteredCloneData([...productsData])
+    }
+  }, [priceFilter])
+
+  const [sortFilter, setSortFilter] = useState(null)
+  useEffect(() => {
+    if (sortFilter !== null) {
+      if (sortFilter === 0) {
+        setProductsData([...filteredCloneData.sort((a, b) => a.price - b.price)])
+      } else {
+        setProductsData([...filteredCloneData.sort((a, b) => b.price - a.price)])
+      }
+    } else {
+      setFilteredCloneData([...productsData])
+    }
+  }, [sortFilter])
 
   return (
     <div className="ShopPage">
@@ -163,13 +242,13 @@ function ShopPage() {
 
       <section className="shop">
         <div className="container">
-          <TypeFilter />
+          <TypeFilter categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} />
 
           <div className="shop__inner">
             <div className="shop__filters filter">
-              <PriceFilter />
-              <ColorFilter />
-              <SizeFilter />
+              <PriceFilter setPriceFilter={setPriceFilter} maxPrice={maxPrice} minPrice={minPrice} />
+              <ColorFilter setColorFilter={setColorFilter} />
+              <SizeFilter sizeFilter={sizeFilter} setSizeFilter={setSizeFilter} />
             </div>
 
             <div className="shop-content">
@@ -350,7 +429,7 @@ function ShopPage() {
                   </Box>
                 </Modal>
 
-                <SortFilter />
+                <SortFilter setSortFilter={setSortFilter} />
 
               </div>
               <div className="shop-content__inner" >
@@ -369,7 +448,7 @@ function ShopPage() {
 
               <div className="pagination">
                 <Pagination
-                  count={productsData.length ? Math.ceil(productsData.length / 6) : 1}
+                  count={filteredCloneData.length ? Math.ceil(filteredCloneData.length / 6) : 1}
                   onChange={(e, page) => setCurrentPage(page)}
                 />
               </div>

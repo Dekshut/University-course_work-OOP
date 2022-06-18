@@ -1,17 +1,12 @@
 import { Box, Button, Modal, TextField, Typography, InputLabel, MenuItem, FormControl, Select } from "@mui/material";
 import { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
-import InputAmount from "../../components/InputAmount/InputAmount";
 import ProductTabs from "../../components/ProductTabs/ProductTabs";
-import StarRating from "../../components/StarRating/StarRating";
-import img1 from '../../images/product/1.jpg';
-import img2 from '../../images/product/2.jpg';
-import img3 from '../../images/product/3.jpg';
-import img4 from '../../images/product/4.jpg';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { changeLoading, getFavoriten } from "../../redux/slices/appSlice";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import Axios from 'axios';
 
 const style = {
   position: 'absolute',
@@ -40,8 +35,8 @@ const requestFetch = (url, method = 'GET', body = null) => {
 
 function ProductPage({ colorObj }) {
   const dispatch = useDispatch()
-  const { isAdmin, userId } = useSelector(state => state.app);
-  const [productImg, setProductImg] = useState(img1);
+  const { isAdmin, userId, allColors, allCategories, token } = useSelector(state => state.app);
+  const [rerender, setRerender] = useState(false);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -52,9 +47,13 @@ function ProductPage({ colorObj }) {
   const handleCloseDelete = () => setOpenDelete(false);
 
   const [color, setColor] = useState('');
-  const [size, setSize] = useState('');
+  const [size, setSize] = useState([]);
   const [category, setCategory] = useState('');
   const [photoPath, setPhotoPath] = useState('');
+  const [title, setTitle] = useState('');
+  const [descr, setDescr] = useState('');
+  const [price, setPrice] = useState('');
+  const [selectedGender, setSelectedGender] = useState('')
 
   const handleChangeColor = (event) => {
     setColor(event.target.value);
@@ -67,6 +66,17 @@ function ProductPage({ colorObj }) {
   };
 
   const [productData, setProductData] = useState({})
+
+  useEffect(() => {
+    setColor(productData.colorId)
+    setSize(productData?.size?.split(','))
+    setCategory(productData.categoryId)
+    // setPhotoPath(productData.img)
+    setTitle(productData.title)
+    setDescr(productData.description)
+    setPrice(productData.price)
+    setSelectedGender(productData.gender)
+  }, [productData])
 
   const [searchParams, setSearchParams] = useSearchParams()
   const id = searchParams.get('id');
@@ -81,14 +91,14 @@ function ProductPage({ colorObj }) {
     requestFetch(url)
       .then(data => {
         dispatch(changeLoading(false))
-        console.log(data)
+        // console.log(data)
         setProductData(data)
       })
       .catch(err => {
         dispatch(changeLoading(false))
         console.log(err);
       });
-  }, [id])
+  }, [id, rerender])
 
 
   const navigate = useNavigate();
@@ -100,6 +110,68 @@ function ProductPage({ colorObj }) {
       await requestFetch(`http://localhost:8080/api/product/fav/?userId=${userId}&productId=${id}`, 'POST')
       dispatch(getFavoriten(userId))
     }
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    const body = {
+      colorId: color,
+      categoryId: category,
+      title: title,
+      price: +price,
+      size: size.join(','),
+      img: photoPath,
+      description: descr,
+      gender: selectedGender
+    }
+
+    console.log(body)
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+    }
+
+    await fetch(`http://localhost:8080/api/product/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: headers
+    }).then(response => {
+      handleClose()
+      return response.json()
+    });
+
+    setRerender(prev => !prev)
+  }
+
+  const uploadImage = async (files) => {
+    dispatch(changeLoading(true))
+    const formData = new FormData();
+    formData.append("file", files[0])
+    formData.append("upload_preset", "qf1acott")
+
+    await Axios.post('https://api.cloudinary.com/v1_1/malbo/image/upload', formData)
+      .then(response => {
+        setPhotoPath(response.data.url);
+        dispatch(changeLoading(false))
+      })
+  }
+
+  const onDelete = async () => {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+    }
+
+    await fetch(`http://localhost:8080/api/product/${id}`, {
+      method: 'DELETE',
+      headers: headers
+    }).then(response => {
+      handleClose()
+      return response.json()
+    });
+
+    navigate(`/`)
   }
 
   return (
@@ -171,46 +243,70 @@ function ProductPage({ colorObj }) {
                       <Typography id="modal-modal-title" variant="h6" component="h2">
                         Edit new product
                       </Typography>
-                      <form className="add-form">
+                      <form name='edit-product' className="add-form" onSubmit={onSubmit}>
                         <TextField
                           fullWidth
                           label="Title"
                           variant="outlined"
+                          value={title}
+                          onChange={(e) => { setTitle(e.target.value) }}
                         />
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 40, }}>
                           <Button
                             variant="outlined"
                             component="label"
+                            style={{ height: '100%', }}
                           >
                             Upload Photo
                             <input
+                              name="image"
+                              required
                               type="file"
-                              onInput={(e) => setPhotoPath(e.target.value)}
+                              accept="image/png, image/jpg, image/gif, image/jpeg"
+                              onChange={(e) => { uploadImage(e.target.files) }}
                               hidden
                             />
                           </Button>
-                          <div
+                          <input
+                            readonly
+                            // disabled
+                            required
+                            placeholder="Select some image"
                             title={photoPath}
-                            style={{ maxWidth: 170, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                            {photoPath}
-                          </div>
+                            style={{
+                              maxWidth: 170,
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                              height: '100%',
+                              borderColor: 'rgba(0, 0, 0, 0.23)',
+                              borderRadius: 5,
+                              padding: '0 10px',
+                              outline: 'none'
+                            }}
+                            value={photoPath}
+                          />
                         </div>
                         <TextField
                           fullWidth
                           label="Description"
                           variant="outlined"
+                          value={descr}
+                          onChange={(e) => { setDescr(e.target.value) }}
                         />
                         <TextField
                           fullWidth
                           label="Price"
                           variant="outlined"
+                          value={price}
+                          onChange={(e) => { setPrice(e.target.value) }}
                         />
-                        <FormControl sx={{ m: 1, width: '100%', margin: 0 }} >
-                          <InputLabel id="demo-select-small">Color</InputLabel>
+                        <FormControl sx={{ m: 1, width: '100%', margin: 0 }} required>
+                          <InputLabel id="select-color">Color</InputLabel>
                           <Select
-                            labelId="demo-select-small"
-                            id="demo-select-small"
+                            labelId="select-color"
+                            id="select-color"
                             value={color}
                             label="Color"
                             onChange={handleChangeColor}
@@ -225,84 +321,62 @@ function ProductPage({ colorObj }) {
                               }
                             }
                           >
-                            <MenuItem value="">
-                              <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={10}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `red` }} />Red
-                              </div>
-                            </MenuItem>
-                            <MenuItem value={20}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `Yellow` }} />Yellow
-                              </div>
-                            </MenuItem>
-                            <MenuItem value={30}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `Brown` }} />Brown
-                              </div>
-                            </MenuItem>
-                            <MenuItem value={40}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `Blue` }} />Blue
-                              </div>
-                            </MenuItem>
-                            <MenuItem value={50}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `White` }} />White
-                              </div>
-                            </MenuItem>
-                            <MenuItem value={60}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `Pink` }} />Pink
-                              </div>
-                            </MenuItem>
-                            <MenuItem value={70}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `Black` }} />Black
-                              </div>
-                            </MenuItem>
-                            <MenuItem value={80}>
-                              <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
-                                <div className='colorRect' style={{ background: `green` }} />Green
-                              </div>
-                            </MenuItem>
+                            {allColors?.map(item => (
+                              <MenuItem value={item.id}>
+                                <div className='option' style={{ display: 'flex', alignItems: 'center' }}>
+                                  <div className='colorRect' style={{ background: item.hex }} />{item.name}
+                                </div>
+                              </MenuItem>
+                            ))}
+
                           </Select>
                         </FormControl>
 
-                        <FormControl fullWidth>
-                          <InputLabel id="demo-simple-select-label">Size</InputLabel>
+                        <FormControl fullWidth required>
+                          <InputLabel id="select-size">Size</InputLabel>
                           <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
+                            multiple
+                            labelId="select-size"
+                            id="select-size"
                             value={size}
                             label="Size"
                             onChange={handleChangeSize}
                           >
-                            <MenuItem value={10}>Xs</MenuItem>
-                            <MenuItem value={20}>S</MenuItem>
-                            <MenuItem value={30}>M</MenuItem>
-                            <MenuItem value={40}>L</MenuItem>
-                            <MenuItem value={50}>XL</MenuItem>
-                            <MenuItem value={60}>XXl</MenuItem>
+                            <MenuItem value={'Xs'}>Xs</MenuItem>
+                            <MenuItem value={'S'}>S</MenuItem>
+                            <MenuItem value={'M'}>M</MenuItem>
+                            <MenuItem value={'L'}>L</MenuItem>
+                            <MenuItem value={'XL'}>XL</MenuItem>
+                            <MenuItem value={'XXL'}>XXL</MenuItem>
                           </Select>
                         </FormControl>
 
-                        <FormControl fullWidth>
-                          <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                        <FormControl fullWidth required>
+                          <InputLabel id="select-gender" >Gender</InputLabel>
                           <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
+                            labelId="select-gender"
+                            id="select-gender"
+                            value={selectedGender}
+                            label="Gender"
+                            onChange={(e) => setSelectedGender(e.target.value)}
+                          >
+                            <MenuItem value={'m'}>Man</MenuItem>
+                            <MenuItem value={'w'}>Woman</MenuItem>
+                          </Select>
+                        </FormControl>
+
+                        <FormControl fullWidth required>
+                          <InputLabel id="select-category">Category</InputLabel>
+                          <Select
+                            labelId="select-category"
+                            id="select-category"
                             value={category}
                             label="Category"
                             onChange={handleChangeCategory}
                           >
-                            <MenuItem value={10}>T-Shirts</MenuItem>
-                            <MenuItem value={20}>Shirts</MenuItem>
-                            <MenuItem value={30}>Hoodies</MenuItem>
-                            <MenuItem value={40}>Sweaters</MenuItem>
-                            <MenuItem value={50}>Jackets</MenuItem>
+                            {allCategories.map(item => (
+                              <MenuItem value={item.id}>{item.name}</MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
 
@@ -325,7 +399,7 @@ function ProductPage({ colorObj }) {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Button variant="outlined" onClick={handleCloseDelete}>Cancel</Button>
-                        <Button variant="contained">Delete</Button>
+                        <Button variant="contained" onClick={onDelete}>Delete</Button>
                       </div>
 
                     </Box>
@@ -333,7 +407,7 @@ function ProductPage({ colorObj }) {
 
                   <div style={{ marginTop: 175 }}>
                     {/* <InputAmount /> */}
-                    <button class="product-one__item-btn" onClick={addToFavorite}>Add to favorite</button>
+                    <Button variant="contained" onClick={addToFavorite}>Add to favorite</Button>
                   </div>
                 </div>
               </div>

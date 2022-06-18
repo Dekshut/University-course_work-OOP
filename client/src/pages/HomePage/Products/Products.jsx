@@ -53,8 +53,7 @@ function Products() {
           TRENDING PRODUCTS
         </h3>
         <p class="text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmodmoe tempor incididunt ut labore et
-          dolore aliqua.
+          With each release we set new goals and work for maximum results.
         </p>
         <div class="product__items">
           {productsClone.map(item => (

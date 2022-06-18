@@ -59,7 +59,7 @@ function App() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      <Footer />
+      <Footer userId={userId}/>
     </>
   );
 }

@@ -1,10 +1,19 @@
+import { useState } from "react";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 
 function ContactPage() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+
+  const onSubmit = (e) => {
+
+  }
+
   return (
     <div className="ContactPage">
       <Breadcrumbs title={'contact'} />
-
 
       <section class="contact">
         <div class="container">
@@ -16,9 +25,7 @@ function ContactPage() {
                 Contact With Us
               </h3>
               <p class="contact__info-text">
-                Lorem ipsum dolor sit amet, consectetur adingn elit, sed do eiusmod tempor incididunt ut labore et dolore
-                magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo maecnaacnrao cumsan lacus vel
-                facilisis.
+                If you contact customer us, your personal data will be processed in accordance with our privacy policy .
               </p>
               <ul class="contact__info-list">
                 <li class="contact__info-item">
@@ -30,19 +37,19 @@ function ContactPage() {
                   Market Street, Newyork
                 </li>
                 <li class="contact__info-item contact__info-item--email">
-                  <div>yourmailaddress@gmail.com</div>
-                  <div>companymail@gmail.com</div>
+                  <div>denismaloffev@gmail.com</div>
+                  <div>malbo@gmail.com</div>
                 </li>
               </ul>
             </div>
-            <form class="contact__form" action="#">
+            <form class="contact__form" action="#" onSubmit={onSubmit}>
               <p class="contact__form-title">Contact Form</p>
               <div class="contact__form-box">
-                <input class="contact__form-input" type="text" placeholder="Your Name" />
-                <input class="contact__form-input" type="text" placeholder="Your E-mail Address" />
+                <input required class="contact__form-input" type="text" placeholder="Your Name" onChange={(e) => setName(e.target.value)}/>
+                <input required class="contact__form-input" type="email" placeholder="Your E-mail Address" onChange={(e) => setEmail(e.target.value)}/>
               </div>
-              <input class="contact__form-input" type="text" placeholder="Subject" />
-              <textarea class="contact__form-textarea" placeholder="Message here"></textarea>
+              <input required class="contact__form-input" type="text" placeholder="Subject" onChange={(e) => setSubject(e.target.value)}/>
+              <textarea required class="contact__form-textarea" placeholder="Message here" onChange={(e) => setMessage(e.target.value)}></textarea>
               <button class="contact__form-btn" type="submit">SEND MESSAGE</button>
             </form>
           </div>

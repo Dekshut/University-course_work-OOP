@@ -22,7 +22,7 @@ const style = {
   p: 4,
 };
 
-function ColorFilter() {
+function ColorFilter({ setColorFilter}) {
   const dispatch = useDispatch()
 
   const { isAdmin, allColors, token } = useSelector(state => state.app);
@@ -30,6 +30,10 @@ function ColorFilter() {
   const [color, setColor] = React.useState('');
   const [colorInput, setColorInput] = React.useState('#000000');
   const [colorName, setColorName] = React.useState('');
+
+  React.useEffect(() => {
+    setColorFilter(allColors.find(item => item.name === color)?.id)
+  }, [color])
 
   const handleChange = (event) => {
     setColor(event.target.value);
@@ -96,7 +100,7 @@ function ColorFilter() {
     <div className="filter__item filter-color">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <h3 className="filter__title">Color Filter</h3>
-        {isAdmin && <AddIcon onClick={handleOpen} style={{ color: '#fff', background: '#34c3ff', borderRadius: 5, cursor: 'pointer' }} />}
+        {isAdmin && <AddIcon onClick={handleOpen} style={{ color: '#fff', background: '#1976d2', borderRadius: 5, cursor: 'pointer' }} />}
       </div>
 
       <Modal
@@ -168,7 +172,7 @@ function ColorFilter() {
             }
           }
         >
-          <MenuItem value="">
+          <MenuItem value=''>
             <em>None</em>
           </MenuItem>
           {allColors?.map(item => (

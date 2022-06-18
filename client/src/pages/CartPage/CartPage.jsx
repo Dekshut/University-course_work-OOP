@@ -32,7 +32,7 @@ export default function CartPage() {
 
           <div className='cartPage-actions__text'>
             <div>Total</div>
-            <div>{Math.round(favorite[0]?.products.reduce((sum, item) => sum + item.price, 0) * 100) / 100}$</div>
+            <div>{Math.round(favorite[0]?.products.reduce((sum, item) => sum + item.price, 0) * 100) / 100 || 0}$</div>
           </div>
 
           <Link to='/contact' style={{ width: '100%', fontWeight: 700, marginTop: 20 }}>
