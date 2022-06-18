@@ -1,4 +1,5 @@
 const Color = require('../model/color')
+const Product = require('../model/product')
 const errorHandler = require('../utils/errorHandler')
 
 class ColorController {
@@ -26,6 +27,12 @@ class ColorController {
     const candidate = await Color.findOne({ where: { id: req.params.id } })
     if (candidate) {
       try {
+        await Product.findAll(
+          {
+            include: [{ model: Color,
+            where:{id: req.params.id}}]
+        }
+        )
         await Color.destroy({
           where: { id: req.params.id }
         })
