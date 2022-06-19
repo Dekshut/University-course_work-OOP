@@ -27,9 +27,9 @@ async function startBd() {
 
 startBd()
 
-// Синхронизация с моделями 
+// Синхронизация с моделями
 // удаляет все таблицы в базе и создает заново
-// sequelize.sync({force: true}).then(result=>{
+// sequelize.sync({ force: true }).then(result => {
 //   console.log("result done");
 // })
-// .catch(err=> console.log(err));
+//   .catch(err => console.log(err));
