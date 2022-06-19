@@ -1,7 +1,3 @@
-import bg1 from '../../../images/content/categories/jewellry.jpg';
-import bg2 from '../../../images/content/categories/accessories.jpg';
-import bg3 from '../../../images/content/categories/men.jpg';
-import bg4 from '../../../images/content/categories/girl.jpg';
 import LoyaltyOutlinedIcon from '@mui/icons-material/LoyaltyOutlined';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';

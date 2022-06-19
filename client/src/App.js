@@ -22,7 +22,6 @@ function App() {
   const dispatch = useDispatch()
   const { loading, favorite, userId} = useSelector(state => state.app)
 
-  // console.log(favorite)
   useEffect(() => {
     dispatch(getAllColors())
     dispatch(getAllCategories())
@@ -54,7 +53,6 @@ function App() {
       <Backdrop
         sx={{ color: '#34c3ff', zIndex: 1400 }}
         open={loading}
-        // onClick={handleClose}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

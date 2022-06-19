@@ -1,8 +1,6 @@
-import logo from '../../images/logo.png';
 import { Link } from 'react-router-dom';
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import PersonIcon from '@mui/icons-material/Person';
-import SearchIcon from '@mui/icons-material/Search';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import { Popover } from '@mui/material';
 import React from 'react';
