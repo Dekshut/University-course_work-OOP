@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 import { changeLoading, getFavoriten } from "../../redux/slices/appSlice";
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
+import { URL } from "../../api/api";
 
 const style = {
   position: 'absolute',
@@ -86,7 +87,7 @@ function ProductPage({ colorObj }) {
 
   useEffect(() => {
     dispatch(changeLoading(true))
-    const url = `http://localhost:8080/api/product/${id}`;
+    const url = `${URL}/product/${id}`;
 
     requestFetch(url)
       .then(data => {
@@ -107,7 +108,7 @@ function ProductPage({ colorObj }) {
     if (userId === null) {
       navigate('/login')
     } else {
-      await requestFetch(`http://localhost:8080/api/product/fav/?userId=${userId}&productId=${id}`, 'POST')
+      await requestFetch(`${URL}/product/fav/?userId=${userId}&productId=${id}`, 'POST')
       dispatch(getFavoriten(userId))
     }
   }
@@ -132,7 +133,7 @@ function ProductPage({ colorObj }) {
       'Authorization': token,
     }
 
-    await fetch(`http://localhost:8080/api/product/${id}`, {
+    await fetch(`${URL}/product/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(body),
       headers: headers
@@ -163,7 +164,7 @@ function ProductPage({ colorObj }) {
       'Authorization': token,
     }
 
-    await fetch(`http://localhost:8080/api/product/${id}`, {
+    await fetch(`${URL}/product/${id}`, {
       method: 'DELETE',
       headers: headers
     }).then(response => {

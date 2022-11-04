@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { URL } from "../../api/api";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 
 function ContactPage() {
@@ -19,7 +20,7 @@ function ContactPage() {
       text: message
     }
 
-    await fetch('http://localhost:8080/api/email/', {
+    await fetch(`${URL}/email/`, {
       method: "POST",
       body: JSON.stringify(body),
       headers: headers

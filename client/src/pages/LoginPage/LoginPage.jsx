@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { useDispatch } from 'react-redux';
 import { changeUserEmail, changeUserRole, changeLoading, changeUserId, changeToken } from "../../redux/slices/appSlice";
+import { URL } from "../../api/api";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ export default function LoginPage() {
   const onSubmit = () => {
     dispatch(changeLoading(true))
 
-    requestFetch('http://localhost:8080/api/user/login', 'POST', { email: email, password: password })
+    requestFetch(`${URL}/user/login`, 'POST', { email: email, password: password })
       .then(data => {
         console.log(data)
         if (data?.message) {

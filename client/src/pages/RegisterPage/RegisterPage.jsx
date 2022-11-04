@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { useDispatch } from 'react-redux';
 import { changeLoading } from "../../redux/slices/appSlice";
+import { URL } from "../../api/api";
 
 
 export default function RegisterPage() {
@@ -28,7 +29,7 @@ export default function RegisterPage() {
 
   const onSubmit = () => {
     dispatch(changeLoading(true))
-    requestFetch('http://localhost:8080/api/user/register', 'POST', { email: email, password: password })
+    requestFetch(`${URL}/user/register`, 'POST', { email: email, password: password })
       .then(data => {
         console.log(data)
         if (data?.message) {

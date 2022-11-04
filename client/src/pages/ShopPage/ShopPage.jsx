@@ -14,6 +14,7 @@ import Axios from 'axios';
 
 import './ShopPage.scss';
 import { changeLoading } from "../../redux/slices/appSlice";
+import { URL } from "../../api/api";
 
 const style = {
   position: 'absolute',
@@ -112,7 +113,7 @@ function ShopPage() {
   useEffect(() => {
     setCategoryFilter()
     dispatch(changeLoading(true))
-    const url = `http://localhost:8080/api/product/for/${gender === 'man' ? 'm' : 'w'}`;
+    const url = `${URL}/product/for/${gender === 'man' ? 'm' : 'w'}`;
 
     requestFetch(url)
       .then(data => {
@@ -144,7 +145,7 @@ function ShopPage() {
       'Authorization': token,
     }
 
-    await fetch(`http://localhost:8080/api/product/`, {
+    await fetch(`${URL}/product/`, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: headers

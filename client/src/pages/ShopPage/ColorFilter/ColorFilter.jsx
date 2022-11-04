@@ -10,6 +10,7 @@ import { Box, Button, Modal, TextField, Typography } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { getAllColors } from '../../../redux/slices/appSlice';
+import { URL } from '../../../api/api';
 
 const style = {
   position: 'absolute',
@@ -53,7 +54,7 @@ function ColorFilter({ setColorFilter}) {
       'Authorization': token,
     }
 
-    await fetch(`http://localhost:8080/api/color/${allColors.find(item => item.name === color)?.id}`, {
+    await fetch(`${URL}/colors/${allColors.find(item => item.name === color)?.id}`, {
       method: 'DELETE',
       headers: headers
     }).then(response => {
@@ -75,7 +76,7 @@ function ColorFilter({ setColorFilter}) {
       hex: colorInput
     }
 
-    const res = await fetch('http://localhost:8080/api/color', {
+    const res = await fetch(`${URL}/color`, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: headers

@@ -1,28 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { URL } from "../../api/api";
 
 export const getAllCategories = createAsyncThunk(
   'app/categories',
   async (userId, thunkAPI) => {
-    const colors = await fetch('http://localhost:8080/api/category').then(response => {
-      if (response.ok) {
-        return response.json()
-      }
-
-      return response.json().then(error => {
-        const e = new Error('Smth gone wrong')
-        e.data = error
-        throw e
-      })
-    });
-
-    return colors
+    
+    const categories = await axios.get(`${URL}/categories`)
+    return categories.data
   }
 );
 
 export const getAllColors = createAsyncThunk(
   'app/colors',
   async (userId, thunkAPI) => {
-    const colors = await fetch('http://localhost:8080/api/color').then(response => {
+    const colors = await fetch(`${URL}/colors`).then(response => {
       if (response.ok) {
         return response.json()
       }
@@ -41,7 +33,7 @@ export const getAllColors = createAsyncThunk(
 export const getFavoriten = createAsyncThunk(
   'app/favoriten',
   async (userId, thunkAPI) => {
-    const favorites = await fetch(`http://localhost:8080/api/product/fav/${userId}`).then(response => {
+    const favorites = await fetch(`${URL}/api/product/fav/${userId}`).then(response => {
       if (response.ok) {
         return response.json()
       }

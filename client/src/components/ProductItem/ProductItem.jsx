@@ -4,6 +4,7 @@ import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 import { getFavoriten } from '../../redux/slices/appSlice';
+import { URL } from '../../api/api';
 
 const requestFetch = (url, method, body = null) => {
   const headers = {
@@ -28,7 +29,7 @@ function ProductItem({ toList, img, title, descr, price, colorId, id, size, colo
     if (userId === null){
       navigate('/login')
     } else {
-      await requestFetch(`http://localhost:8080/api/product/fav/?userId=${userId}&productId=${id}`, 'POST')
+      await requestFetch(`${URL}/product/fav/?userId=${userId}&productId=${id}`, 'POST')
       dispatch(getFavoriten(userId))
     }
   }

@@ -5,6 +5,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { getFavoriten } from '../../../redux/slices/appSlice';
+import { URL } from '../../../api/api';
 
 export default function CartPageItem({ colorObj, category, size, title, price, id, img, favId }) {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ export default function CartPageItem({ colorObj, category, size, title, price, i
       'Content-Type': 'application/json'
     }
     
-    await fetch(`http://localhost:8080/api/product/fav/${favId}`, {
+    await fetch(`${URL}/product/fav/${favId}`, {
       method: 'DELETE',
       headers: headers
     }).then(response => {

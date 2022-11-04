@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ProductItem from "../../../components/ProductItem/ProductItem";
 import { useSelector, useDispatch } from 'react-redux';
 import { changeLoading } from "../../../redux/slices/appSlice";
+import { URL } from "../../../api/api";
 
 const requestFetch = (url) => {
   return fetch(url).then(response => {
@@ -33,7 +34,7 @@ function Products() {
 
   useEffect(() => {
     dispatch(changeLoading(true))
-    const url = `http://localhost:8080/api/product`;
+    const url = `${URL}/product`;
     requestFetch(url)
       .then(data => {
         dispatch(changeLoading(false))
@@ -58,8 +59,8 @@ function Products() {
         <div class="product__items">
           {productsClone.map(item => (
             <ProductItem
-              category={allCategories.find(category => category.id === item.categoryId)}
-              colorObj={allColors.find(color => color.id === item.colorId)}
+              category={allCategories.find(category => category.id === item.idCategory.id)}
+              colorObj={allColors.find(color => color.id === item.idColor.id)}
               img={item.img}
               price={item.price}
               title={item.title}
